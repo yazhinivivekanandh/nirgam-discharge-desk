@@ -1,0 +1,9 @@
+query_id,patient_id,received_at,query_type,query_text,expected_handling
+Q001,PT001,2026-08-13 12:10,factual,"Confirm date of admission and date of discharge.",auto_answer_from_admissions
+Q002,PT001,2026-08-13 12:12,factual,"Confirm ward category billed - general or semi-private.",auto_answer_from_admissions
+Q003,PT001,2026-08-13 12:20,clinical,"Justify need for inpatient admission for appendicitis.",escalate_to_doctor_with_source_note
+Q004,PT002,2026-08-12 15:05,factual,"Number of CBC tests billed during stay.",auto_answer_from_billing
+Q005,PT002,2026-08-12 15:30,clinical,"Justify 3-day admission for dengue without warning signs.",escalate_to_doctor_with_source_note
+Q006,PT003,2026-08-13 11:40,clinical,"Justify antibiotic escalation from azithromycin to amoxicillin-clavulanate.",escalate_to_doctor_with_source_note
+Q007,PT003,2026-08-13 11:45,clinical,"Patient file records penicillin allergy - clarify safety of amoxicillin-clavulanate.",escalate_to_doctor_urgent
+Q008,PT003,2026-08-13 11:50,factual,"Confirm stay days approved versus stay days billed.",auto_answer_from_admissions

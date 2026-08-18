@@ -1,0 +1,5 @@
+patient_id,name,age,sex,diagnosis,admission_date,ward,insurer,policy_number,pre_auth_limit_inr,approved_stay_days
+PT001,Ramesh Kumar,54,M,Acute appendicitis,2026-08-10,General Ward,Star Health,STAR-2026-448812,120000,4
+PT002,Sunita Devi,32,F,Dengue fever,2026-08-09,General Ward,HDFC Ergo,HDFC-2026-771205,80000,5
+PT003,Arjun Mehta,61,M,Community-acquired pneumonia,2026-08-08,Semi-private,ICICI Lombard,ICIC-2026-390417,150000,5
+PT004,Test Entry,,,UNKNOWN,2026-08-13,,,POL##ERROR-99,,

@@ -1,0 +1,25 @@
+entry_id,patient_id,date,department,item,amount_inr,entry_type,linked_emr_log
+B001,PT001,2026-08-10,Radiology,USG Abdomen,1800,charge,L001
+B002,PT001,2026-08-10,OT,Laparoscopic appendectomy package,45000,charge,L002
+B003,PT001,2026-08-10,OT,Anesthesia charges,8000,charge,L002
+B004,PT001,2026-08-10,Pharmacy,IV ceftriaxone + IV fluids (3 days),4200,charge,L001
+B005,PT001,2026-08-11,Laboratory,CBC,500,charge,L001
+B006,PT001,2026-08-12,Ward,Room and nursing charges (3 nights),18000,charge,
+B007,PT001,2026-08-13,Surgeon,Surgeon professional fee,15000,charge,L002
+B008,PT001,2026-08-13,Pharmacy,Return: unused IV ceftriaxone vials,-850,credit,L005
+B009,PT002,2026-08-09,Laboratory,Dengue NS1 antigen test,900,charge,L006
+B010,PT002,2026-08-09,Laboratory,CBC,500,charge,L006
+B011,PT002,2026-08-10,Laboratory,CBC,500,charge,L006
+B012,PT002,2026-08-11,Laboratory,CBC,500,charge,L006
+B013,PT002,2026-08-10,Pharmacy,IV fluids and paracetamol,2600,charge,L006
+B014,PT002,2026-08-12,Ward,Room and nursing charges (3 nights),13500,charge,
+B015,PT003,2026-08-08,Radiology,Chest X-ray PA view,1200,charge,L010
+B016,PT003,2026-08-08,Laboratory,CBC + CRP,1100,charge,L010
+B017,PT003,2026-08-09,Pharmacy,IV azithromycin (2 days),1800,charge,L010
+B018,PT003,2026-08-10,Pharmacy,IV amoxicillin-clavulanate (3 days),3900,charge,L012
+B019,PT003,2026-08-10,Ward,Nebulization,400,charge,
+B020,PT003,2026-08-10,Ward,Nebulization,400,charge,
+B021,PT003,2026-08-09,Ward,Oxygen therapy (2 days),1600,charge,L010
+B022,PT003,2026-08-13,Ward,Room and nursing charges (5 nights),27500,charge,
+B023,PT004,2026-08-13,Misc,UNKNOWN ADJUSTMENT ???,999999,charge,
+B024,PT004,2026-08-13,,,,charge,

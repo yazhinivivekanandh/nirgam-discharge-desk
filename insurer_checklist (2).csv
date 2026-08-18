@@ -1,0 +1,9 @@
+item_id,requirement
+C1,Final diagnosis
+C2,Procedure performed with date (if any)
+C3,Date of admission and date of discharge
+C4,Investigations done with key findings
+C5,Medicines on discharge with dose and duration
+C6,Condition at discharge
+C7,Follow-up advice with date
+C8,Final bill amount
