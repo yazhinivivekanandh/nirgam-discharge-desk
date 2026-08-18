@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<title>Nirgam &mdash; Discharge Desk</title>
+<style>
+:root{
+--bg:#F4F8FC; --card:#FFFFFF; --ink:#0F2438; --muted:#5E7893; --line:#DBE7F2;
+--primary:#0B63B3; --primary-dark:#084C8A; --primary-soft:#E8F2FB;
+--nav1:#0B3C63; --nav2:#12578F;
+--amber:#8A5307; --amber-bg:#FDF4E4; --amber-line:#EFCE96;
+--red:#A32019; --red-bg:#FDECEA; --red-line:#EFB3AD;
+--green:#0E7350; --green-bg:#E6F4EE; --green-line:#A3D4BE;
+--sans:-apple-system,"SF Pro Text","SF Pro Display",BlinkMacSystemFont,"Helvetica Neue",Segoe UI,Roboto,Arial,sans-serif;
+--mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+--r:12px; --sh:0 1px 2px rgba(11,60,99,.06),0 1px 8px rgba(11,60,99,.04);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+code,.mono{font-family:var(--mono)}
+button{font-family:inherit;font-size:14px;cursor:pointer}
+.topbar{background:linear-gradient(90deg,var(--nav1),var(--nav2));color:#fff;padding:11px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.topbar h1{font-size:16px;font-weight:600;margin:0;letter-spacing:-.01em}
+.topbar .sub{font-size:12.5px;color:#B6D2E8}
+.topbar .spacer{flex:1}
+.topbar select{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:8px;padding:6px 10px;font-family:inherit;font-size:13px}
+.tabs{display:flex;gap:4px;padding:0 22px;background:#fff;border-bottom:1px solid var(--line)}
+.tabs button{background:transparent;border:0;color:var(--muted);padding:12px 14px;border-bottom:2px solid transparent;font-weight:500}
+.tabs button.on{color:var(--primary);border-bottom-color:var(--primary)}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 64px;animation:rise .28s cubic-bezier(.2,.7,.3,1)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:16px;box-shadow:var(--sh)}
+h2{font-size:18px;font-weight:600;margin:0 0 4px;letter-spacing:-.01em}
+h3{font-size:12.5px;font-weight:600;margin:0 0 10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.lede{color:var(--muted);font-size:13px;margin:0 0 16px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-weight:600;color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;padding:9px 10px;background:#F7FBFE;border-bottom:1px solid var(--line)}
+td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr.row:hover{background:var(--primary-soft);cursor:pointer}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:500;border:1px solid}
+.chip.ok{background:var(--green-bg);color:var(--green);border-color:var(--green-line)}
+.chip.warn{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-line)}
+.chip.bad{background:var(--red-bg);color:var(--red);border-color:var(--red-line)}
+.chip.neutral{background:var(--primary-soft);color:var(--primary);border-color:#C7DEF2}
+.btn{background:var(--primary);color:#fff;border:0;border-radius:9px;padding:10px 17px;font-weight:500}
+.btn:hover{background:var(--primary-dark)}
+.btn:disabled{background:#BDD2E4;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--primary);border:1px solid #BFD9EF}
+.btn.ghost:hover{background:var(--primary-soft)}
+.btn.ghost:disabled{background:#fff;color:#9FB6CA;border-color:var(--line)}
+.btn.small{padding:7px 13px;font-size:13px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:6px 12px;font-size:14px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0}
+.rail{display:flex;gap:5px;margin:14px 0 6px;flex-wrap:wrap}
+.rail div{flex:1;min-width:88px;border-top:3px solid var(--line);padding-top:7px;font-size:11.5px;color:var(--muted);font-weight:500}
+.rail div.done{border-top-color:var(--green);color:var(--green)}
+.rail div.run{border-top-color:var(--primary);color:var(--primary)}
+.rail div.block{border-top-color:var(--amber);color:var(--amber)}
+.rail div.fail{border-top-color:var(--red);color:var(--red)}
+.note{border-left:3px solid #CFE2F3;padding:8px 0 8px 12px;margin-bottom:12px}
+.note .meta{font-size:12px;color:var(--muted);margin-bottom:2px}
+.note .id{font-size:11.5px;color:var(--primary);font-weight:500}
+.step{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:2px}
+.step.run .dot{border-color:var(--primary);border-right-color:transparent;animation:spin .8s linear infinite}
+.step.done .dot{border-color:var(--green);background:var(--green)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.step .lbl{font-weight:500}
+.step .det{font-size:13px;color:var(--muted)}
+.sec{margin-bottom:16px}
+.sec h4{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 4px;font-weight:600}
+.sec p{margin:0}
+.src{font-family:var(--mono);font-size:11.5px;color:var(--primary);background:var(--primary-soft);padding:2px 7px;border-radius:5px;display:inline-block;margin-top:5px}
+.pending{background:var(--amber-bg);border:1px solid var(--amber-line);color:var(--amber);border-radius:8px;padding:9px 11px;font-size:13.5px}
+.alert{border-radius:10px;padding:14px;margin-bottom:14px;border:1px solid}
+.alert.red{background:var(--red-bg);border-color:var(--red-line)}
+.alert.amber{background:var(--amber-bg);border-color:var(--amber-line)}
+.alert b{display:block;margin-bottom:4px;font-size:14px}
+.alert.red b{color:var(--red)} .alert.amber b{color:var(--amber)}
+.alert p{margin:0;font-size:13.5px}
+.check{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.check:last-child{border-bottom:0}
+.check .miss{color:var(--red);font-weight:500}
+.check .has{color:var(--green);font-weight:500}
+.sticky{position:sticky;top:16px}
+.scrub{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.scrub button{border:1px solid #BFD9EF;background:#fff;border-radius:8px;padding:6px 12px;font-size:13px;color:var(--muted)}
+.scrub button.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.bar{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:14px;margin:0 -18px -18px;border-radius:0 0 var(--r) var(--r);flex-wrap:wrap}
+.bar span{font-size:13px;color:var(--muted);flex:1;min-width:200px}
+.log{font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.9}
+.log b{color:var(--ink);font-weight:500}
+.sim{font-size:11px;background:var(--primary-soft);border:1px solid #C7DEF2;color:var(--primary);padding:2px 8px;border-radius:5px;margin-left:6px}
+.metric{font-size:30px;font-weight:600;letter-spacing:-.02em;color:var(--primary)}
+.metric small{display:block;font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.05em;text-transform:uppercase;margin-top:4px}
+.back{background:none;border:0;color:var(--primary);padding:0;margin-bottom:12px;font-size:13.5px;font-weight:500}
+.his{background:#DCE3E9;border:1px solid #A9B7C3;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#12212E;border-radius:2px}
+.his .hdr{background:#42586B;color:#fff;padding:7px 12px;font-weight:700;font-size:13.5px;display:flex;justify-content:space-between}
+.his .hdr span{font-weight:400;color:#C2D0DB;font-size:12px}
+.his .body{padding:12px}
+.his .panel{background:#fff;border:1px solid #A9B7C3;padding:12px;margin-bottom:10px}
+.his .panel>b{display:block;margin-bottom:8px;font-size:12.5px;color:#2C4356;border-bottom:1px solid #DCE3E9;padding-bottom:5px}
+.his table{font-size:12.5px}
+.his th{background:#EDF1F4;color:#3A4B59;border-bottom:1px solid #A9B7C3;padding:5px 8px;text-transform:none;letter-spacing:0;font-size:12px;font-weight:700}
+.his td{padding:5px 8px;border-bottom:1px solid #E4EAEF}
+.his input,.his select{font-family:Arial,Helvetica,sans-serif;font-size:13px;border:1px solid #8FA0AE;padding:5px 7px;width:100%;background:#fff;border-radius:0}
+.his label{display:block;font-size:11.5px;color:#3A4B59;margin-bottom:3px}
+.his .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+.his button{background:#3A6EA5;color:#fff;border:1px solid #2C5581;padding:7px 15px;font-family:Arial,Helvetica,sans-serif;font-size:13px;border-radius:0}
+.his .out{background:#101C26;color:#9FE0A8;font-family:var(--mono);font-size:12px;padding:10px 12px;line-height:1.8;white-space:pre-wrap}
+.his .err{color:#FF9B8F}
+@media(max-width:760px){.grid2,.grid3{grid-template-columns:1fr}.kv{grid-template-columns:110px 1fr}.his .row3{grid-template-columns:1fr}}
+
+/* --- design layer --- */
+body{background:
+  radial-gradient(1200px 500px at 15% -8%,#E3EFFA 0%,rgba(227,239,250,0) 60%),
+  radial-gradient(900px 420px at 92% 0%,#EAF3FA 0%,rgba(234,243,250,0) 55%),
+  var(--bg);background-attachment:fixed}
+.topbar{padding:13px 24px;box-shadow:0 1px 0 rgba(9,44,74,.18)}
+.mark{width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);display:grid;place-items:center;font-size:14px;font-weight:700;letter-spacing:-.03em}
+.tabs{padding:0 24px;box-shadow:0 1px 0 rgba(11,60,99,.04)}
+.tabs button{transition:color .15s}
+.card{border-radius:14px;transition:box-shadow .18s,transform .18s}
+.wrap>.card:hover,.grid3>.card:hover{box-shadow:0 2px 4px rgba(11,60,99,.07),0 12px 28px -12px rgba(11,60,99,.18)}
+tr.row{transition:background .12s}
+.view{animation:rise .28s cubic-bezier(.2,.7,.3,1)}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* metric tiles */
+.tile{position:relative;overflow:hidden}
+.tile:before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--accent,var(--primary))}
+.tile .ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--soft,var(--primary-soft));margin-bottom:12px;font-size:16px}
+/* avatar */
+.av{width:36px;height:36px;border-radius:11px;background:linear-gradient(145deg,#E8F2FB,#D3E6F7);color:var(--primary);display:grid;place-items:center;font-size:13px;font-weight:600;letter-spacing:.01em;flex:none}
+.pw{display:flex;align-items:center;gap:11px}
+/* stay spine */
+.rail{display:flex;gap:0;margin:18px 0 4px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+.rail div{flex:1;min-width:82px;border-top:0;padding:0;position:relative;text-align:center;font-size:11px;color:var(--muted);font-weight:500}
+.rail div:before{content:"";position:absolute;top:11px;left:0;right:0;height:2px;background:var(--line)}
+.rail div:first-child:before{left:50%} .rail div:last-child:before{right:50%}
+.rail div i{position:relative;z-index:1;display:grid;place-items:center;width:24px;height:24px;margin:0 auto 7px;border-radius:50%;background:#fff;border:2px solid var(--line);font-style:normal;font-size:11px;font-weight:600;color:var(--muted)}
+.rail div.done:before,.rail div.run:before{background:#BBD8EF}
+.rail div.done i{border-color:var(--green);background:var(--green);color:#fff}
+.rail div.done{color:var(--green)}
+.rail div.run i{border-color:var(--primary);color:var(--primary);box-shadow:0 0 0 4px rgba(11,99,179,.12)}
+.rail div.run{color:var(--primary)}
+.rail div.block i{border-color:var(--amber);color:var(--amber);background:var(--amber-bg)}
+.rail div.block{color:var(--amber)}
+.rail div.fail i{border-color:var(--red);color:var(--red);background:var(--red-bg)}
+.rail div.fail{color:var(--red)}
+/* document sheet */
+.sheet{background:#fff;border:1px solid var(--line);border-radius:12px;padding:26px 28px;box-shadow:0 1px 2px rgba(11,60,99,.05),0 18px 40px -28px rgba(11,60,99,.35)}
+.letter{border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.letter .org{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.letter .org small{display:block;font-weight:400;font-size:11.5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-top:2px}
+.letter .doc{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);text-align:right}
+.sec p{font-size:14.5px;line-height:1.62}
+.chip:before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:6px;vertical-align:1px;opacity:.85}
+
+/* --- mediax-inspired layer: vivid blue + mint, softer shapes --- */
+:root{
+--primary:#2450E5; --primary-dark:#1A3CC0; --primary-soft:#EAF0FF;
+--nav1:#1E44D8; --nav2:#2E8BE6;
+--mint:#12B47F; --mint-soft:#E6F7F1; --mint-line:#9DDCC5;
+--line:#E4ECF7; --bg:#F2F7FD;
+--sh:0 1px 2px rgba(29,64,140,.05),0 10px 30px -18px rgba(29,64,140,.28);
+--r:18px;
+}
+body{background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cg fill='%23DCE8F8' fill-opacity='.55'%3E%3Cpath d='M22 14h6v6h6v6h-6v6h-6v-6h-6v-6h6z'/%3E%3Cpath d='M88 70h5v5h5v5h-5v5h-5v-5h-5v-5h5z'/%3E%3C/g%3E%3C/svg%3E"),
+  radial-gradient(1100px 460px at 12% -10%,#E2ECFF 0%,rgba(226,236,255,0) 62%),
+  radial-gradient(820px 380px at 94% -4%,#E4F6F0 0%,rgba(228,246,240,0) 58%),
+  var(--bg);background-attachment:fixed}
+.topbar{background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cg fill='%23ffffff' fill-opacity='.07'%3E%3Cpath d='M60 18h5v5h5v5h-5v5h-5v-5h-5v-5h5z'/%3E%3Cpath d='M16 58h4v4h4v4h-4v4h-4v-4h-4v-4h4z'/%3E%3C/g%3E%3C/svg%3E"),
+  linear-gradient(100deg,var(--nav1) 0%,#2C6FE3 55%,var(--nav2) 100%)}
+.mark{border-radius:10px;background:rgba(255,255,255,.2)}
+.card{border-radius:var(--r);border-color:var(--line);padding:20px}
+.btn{border-radius:999px;padding:10px 20px;box-shadow:0 6px 16px -8px rgba(36,80,229,.7)}
+.btn.go{background:var(--mint);box-shadow:0 6px 16px -8px rgba(18,180,127,.8)}
+.btn.go:hover{background:#0E9C6E}
+.btn.ghost{border-radius:999px;border-color:#C9D9F6;box-shadow:none}
+.btn.small{padding:7px 15px}
+.scrub button{border-radius:999px;border-color:#C9D9F6}
+.tile .ico{width:42px;height:42px;border-radius:14px;font-size:19px}
+.tile:before{width:4px;border-radius:4px 0 0 4px}
+.av{border-radius:14px;background:linear-gradient(145deg,#EAF0FF,#D8E4FF)}
+.chip{padding:4px 12px}
+.check .has{color:var(--mint)}
+.rail div.done i{border-color:var(--mint);background:var(--mint)}
+.rail div.done{color:var(--mint)}
+.rail div.run i{box-shadow:0 0 0 5px rgba(36,80,229,.14)}
+.src{border-radius:999px;padding:3px 10px}
+.sheet{border-radius:20px}
+.alert{border-radius:14px}
+.pending{border-radius:12px}
+.sim{border-radius:999px}
+th{background:#F5F9FF;border-radius:0}
+tr.row:hover{background:#F5F9FF}
+.tabs button{font-size:14px}
+h2{font-size:19px;font-weight:650}
+.metric{font-size:32px}
+
+/* --- full mediax language --- */
+h2{font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.25}
+h2 em{font-style:normal;color:var(--primary)}
+.eyebrow{display:flex;align-items:center;gap:8px;color:var(--mint);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+.eyebrow:before{content:"";width:14px;height:14px;flex:none;background:var(--mint);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 2h6v7h7v6h-7v7H9v-7H2V9h7z'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 2h6v7h7v6h-7v7H9v-7H2V9h7z'/%3E%3C/svg%3E") center/contain no-repeat}
+.hero{position:relative;overflow:hidden;border-radius:24px;padding:30px 32px;margin-bottom:18px;color:#fff;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cg fill='%23ffffff' fill-opacity='.08'%3E%3Cpath d='M80 20h6v6h6v6h-6v6h-6v-6h-6v-6h6z'/%3E%3Cpath d='M20 76h5v5h5v5h-5v5h-5v-5h-5v-5h5z'/%3E%3C/g%3E%3C/svg%3E"),
+  linear-gradient(115deg,#1E44D8 0%,#2C6FE3 52%,#2E8BE6 100%);
+  box-shadow:0 18px 40px -22px rgba(30,68,216,.7)}
+.hero:after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero:before{content:"";position:absolute;right:40px;bottom:-90px;width:170px;height:170px;border-radius:50%;background:rgba(18,180,127,.28)}
+.hero .eyebrow{color:#8FF3D0}
+.hero h2{color:#fff;font-size:27px;max-width:22ch}
+.hero h2 em{color:#8FF3D0}
+.hero p{color:#D6E4FF;font-size:14px;max-width:52ch;margin:8px 0 0;position:relative;z-index:1}
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;position:relative;z-index:1;max-width:420px}
+.statgrid div{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:12px 14px}
+.statgrid b{display:block;font-size:23px;font-weight:700;letter-spacing:-.02em}
+.statgrid span{font-size:11.5px;color:#CFE0FF;letter-spacing:.03em}
+.feat{text-align:center;padding:26px 18px;border-radius:20px;transition:transform .2s,box-shadow .2s,background .2s}
+.feat:hover{transform:translateY(-4px)}
+.feat .ico{width:60px;height:60px;border-radius:20px;display:grid;place-items:center;margin:0 auto 14px;font-size:26px;background:var(--soft,var(--primary-soft))}
+.feat .metric{font-size:34px}
+.tile:before{display:none}
+.card{padding:22px}
+.btn{font-weight:600}
+
+/* --- flat, consistent radii, real icons --- */
+:root{ --r:14px; --r-sm:10px; --sh:none; }
+*,*:before,*:after{box-shadow:none !important}
+.card,.sheet,.hero,.alert,.pending,.his,.feat,.tile,.statgrid div,.his .panel,.his .out{border-radius:var(--r)}
+.btn,.btn.ghost,.btn.small,.scrub button,.his button,.his input,.his select,.av,.mark,.tile .ico,.feat .ico,.src,.sim{border-radius:var(--r-sm)}
+.chip{border-radius:999px}
+.rail div i{border-radius:50%}
+.card:hover,.wrap>.card:hover,.grid3>.card:hover,.feat:hover{transform:none}
+.rail div.run i{background:var(--primary-soft)}
+/* calm ward banner */
+.hero{background:#fff;border:1px solid var(--line);color:var(--ink);padding:26px 26px 24px}
+.hero:before,.hero:after{display:none}
+.hero .eyebrow{color:var(--mint)}
+.hero h2{color:var(--ink);font-size:25px}
+.hero h2 em{color:var(--primary)}
+.hero p{color:var(--muted)}
+.statgrid{max-width:none;grid-template-columns:repeat(4,1fr);gap:10px}
+.statgrid div{background:#F7FAFF;border:1px solid var(--line)}
+.statgrid b{color:var(--ink);font-size:21px}
+.statgrid span{color:var(--muted)}
+/* icons */
+.ico svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.feat .ico{width:52px;height:52px;color:var(--primary)}
+@media(max-width:760px){.statgrid{grid-template-columns:1fr 1fr}}
+
+.mark{width:34px;height:34px;background:#fff;border:0;display:grid;place-items:center;padding:3px;overflow:hidden;margin-right:-8px}
+.mark img{width:100%;height:100%;object-fit:contain;display:block}
+.topbar h1{font-family:"Poppins",var(--sans);font-weight:700;font-size:19px;letter-spacing:-.005em}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="mark"><img src="data:image/png;base64,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" alt="Nirgam"></div>
+  <h1>Nirgam</h1>
+  <span class="sub">Discharge Desk &middot; Sunrise Multispeciality, Gurgaon &middot; synthetic data</span>
+  <span class="spacer"></span>
+  <label class="sub" for="role">Signed in as</label>
+  <select id="role">
+    <option>Resident doctor</option>
+    <option>Attending consultant</option>
+    <option>TPA executive</option>
+    <option>Floor clerk</option>
+    <option>Billing head</option>
+    <option>Medical director</option>
+  </select>
+</div>
+<div class="tabs">
+  <button id="t-ward" class="on">Ward</button>
+  <button id="t-pat">Patients</button>
+  <button id="t-q">Insurer queries</button>
+  <button id="t-his" style="margin-left:auto">Hospital HIS &middot; existing system</button>
+</div>
+
+<div class="wrap" id="app"></div>
+
+<!--
+  BACKEND SWAP MAP  (all data below is mock; replace these, nothing else)
+  ------------------------------------------------------------------
+  const DATA            -> GET  /api/patients                    (list + per-patient record)
+  p.notes               -> GET  /api/patients/:id/notes          (EMR feed)
+  p.bill                -> GET  /api/patients/:id/bill           (billing ledger)
+  p.summary             -> GET  /api/patients/:id/summary        (agent output, sections + sources)
+  p.flags               -> GET  /api/patients/:id/flags          (allergy / duplicate / language)
+  CHECKLIST + cl[]      -> GET  /api/patients/:id/checklist      (C1-C8 present/missing)
+  run()                 -> POST /api/patients/:id/run            then poll /state
+  sign()                -> POST /api/gates/summary_signoff/approve
+  resolve_()            -> POST /api/gates/md_reconciliation/approve
+  admit()               -> POST /api/his/admissions              (demo stand-in for an ADT event)
+  queries()             -> GET  /api/patients/:id/queries
+  API KEYS: none here, and none ever. Keys live in the backend proxy only.
+-->
+<script>
+const DATA = {
+  PT001:{id:"PT001",name:"Ramesh Kumar",age:54,sex:"M",ward:"General ward 3, Bed 12",dx:"Acute appendicitis",adm:"09 Aug 2026",day:4,approved:4,
+    insurer:"MediSecure General Insurance",policy:"MS-2201-88421",limit:"1,20,000",status:"ready",chip:["Ready for sign-off","ok"],
+    notes:[
+      ["L001","09 Aug, 22:40","Doctor","Admitted with acute right lower abdominal pain for 12 hours with fever. USG abdomen shows acute appendicitis. Started IV fluids and IV ceftriaxone 1g BD. Planned for laparoscopic appendectomy."],
+      ["L002","10 Aug, 11:15","Doctor","Laparoscopic appendectomy done under general anaesthesia. Procedure uneventful. Post-op vitals stable, afebrile. Continue IV antibiotics and analgesics."],
+      ["L003","11 Aug, 08:20","Nurse","Vitals stable, afebrile. Tolerating soft diet. Ambulating with support. Drain output minimal. Wound clean and dry. Pain score 2/10."],
+      ["L004","12 Aug, 09:05","Doctor","Wound healthy, drain removed. Switch to oral cefixime 200mg BD for 5 days, paracetamol SOS. Review in OPD on day 7 for suture removal."],
+      ["L005","12 Aug, 09:10","Doctor","Patient is fit for discharge. Approve clinical discharge."]],
+    bill:[["B001","Room charges (4 days)",36000],["B002","Laparoscopic appendectomy",32000],["B003","OT consumables",6500],["B004","Pharmacy",5400],["B005","Laboratory",3200],["B006","Radiology (USG)",2100],["B007","Consultant visits",4000],["B008","Pharmacy return credit",-550]],
+    summary:{
+      "Patient details":["Ramesh Kumar, 54/M. Admitted 09 Aug 2026, discharged 12 Aug 2026. General ward.","L001"],
+      "Diagnosis":["Acute appendicitis, confirmed on ultrasound abdomen.","L001"],
+      "Treatment given":["Laparoscopic appendectomy performed under general anaesthesia on 10 Aug 2026. Procedure uneventful. IV ceftriaxone 1g BD with IV fluids and analgesics through the stay.","L001, L002"],
+      "Investigations done":["Ultrasound abdomen showing acute appendicitis.","L001"],
+      "Medicines on discharge":["Tab cefixime 200mg BD for 5 days. Tab paracetamol 500mg SOS for pain.","L004"],
+      "Condition at discharge":["Afebrile, vitals stable, tolerating oral diet, ambulating independently. Wound healthy, drain removed.","L003, L004"],
+      "Follow-up advice":["Review in OPD on day 7 for suture removal.","L004"]},
+    days:{1:["Patient details","Diagnosis"],2:["Patient details","Diagnosis","Treatment given","Investigations done"],3:["Patient details","Diagnosis","Treatment given","Investigations done","Condition at discharge"],4:"all"},
+    flags:[]},
+  PT002:{id:"PT002",name:"Sunita Devi",age:32,sex:"F",ward:"General ward 2, Bed 4",dx:"Dengue fever with thrombocytopenia",adm:"10 Aug 2026",day:3,approved:4,
+    insurer:"MediSecure General Insurance",policy:"MS-2201-55310",limit:"80,000",status:"pending",chip:["2 items pending consultant input","warn"],
+    notes:[
+      ["L006","10 Aug, 15:10","Doctor","Fever for 4 days with body ache. Platelet count 78,000. NS1 antigen positive. Started IV fluids and supportive care. Monitor platelets 12 hourly."],
+      ["L007","11 Aug, 09:00","Doctor","Platelets 62,000. No bleeding manifestations. Continue IV fluids and monitoring."],
+      ["L008","12 Aug, 08:30","Nurse","Afebrile since morning. Platelets 1,10,000. Oral intake adequate. Passed urine normally."],
+      ["L009","12 Aug, 12:00","Doctor","Clinically improving, platelets recovering. Patient is fit for discharge. Approve clinical discharge."]],
+    bill:[["B009","Room charges (3 days)",21000],["B010","Laboratory (serial CBC)",6800],["B011","Pharmacy",3100],["B012","Consultant visits",3000]],
+    summary:{
+      "Patient details":["Sunita Devi, 32/F. Admitted 10 Aug 2026, discharged 12 Aug 2026. General ward.","L006"],
+      "Diagnosis":["Dengue fever with thrombocytopenia. NS1 antigen positive.","L006"],
+      "Treatment given":["IV fluids and supportive care with 12-hourly platelet monitoring through the stay.","L006, L007"],
+      "Investigations done":["NS1 antigen positive. Serial platelet counts: 78,000 on admission, 62,000 on day 2, 1,10,000 on day 3.","L006, L007, L008"],
+      "Medicines on discharge":["PENDING","L006-L009"],
+      "Condition at discharge":["Afebrile since morning, platelets recovering, oral intake adequate.","L008, L009"],
+      "Follow-up advice":["PENDING","L006-L009"]},
+    days:{1:["Patient details","Diagnosis"],2:["Patient details","Diagnosis","Treatment given"],3:"all"},
+    flags:[["amber","2 sections could not be completed","No discharge medication and no follow-up advice were recorded by the treating doctor in logs L006 to L009. The summary will not invent them. Resident input required before sign-off."]]},
+  PT003:{id:"PT003",name:"Arjun Mehta",age:61,sex:"M",ward:"Semi-private 1, Bed 2",dx:"Community-acquired pneumonia",adm:"08 Aug 2026",day:5,approved:5,
+    insurer:"BharatCare Health Insurance",policy:"BC-77-10294",limit:"1,50,000",status:"blocked",chip:["Critical: allergy conflict","bad"],
+    notes:[
+      ["L010","08 Aug, 09:30","Doctor","Admitted with fever, productive cough and breathlessness for 3 days. Chest X-ray shows right lower lobe consolidation. Patient reports allergy to penicillin. Started on IV azithromycin."],
+      ["L011","09 Aug, 10:00","Nurse","Fever spikes continue. SpO2 94% on room air. Nebulisation twice today."],
+      ["L012","10 Aug, 11:20","Doctor","Poor clinical response to azithromycin. Escalated to IV amoxicillin-clavulanate 1.2g TDS."],
+      ["L013","11 Aug, 09:45","Doctor","Elderly patient, may need 2 more days of observation. Improving slowly, fever settling."],
+      ["L014","12 Aug, 08:15","Nurse","Afebrile 24 hours. SpO2 97% on room air. Chest clearing."],
+      ["L015","12 Aug, 16:00","Doctor","Fit for discharge. Tab amoxicillin-clavulanate 625mg TDS for 5 days. Review in OPD after 1 week with repeat chest X-ray."]],
+    bill:[["B016","Room charges (5 days)",57500],["B017","Laboratory",7400],["B018","Radiology (chest X-ray x2)",3600],["B019","Nebulisation",900],["B020","Nebulisation",900],["B021","Pharmacy",9200],["B022","Consultant visits",5000]],
+    summary:{
+      "Patient details":["Arjun Mehta, 61/M. Admitted 08 Aug 2026. Semi-private ward.","L010"],
+      "Diagnosis":["Community-acquired pneumonia with right lower lobe consolidation on chest X-ray.","L010"],
+      "Treatment given":["Started on IV azithromycin. Escalated to IV amoxicillin-clavulanate 1.2g TDS on 10 Aug due to poor clinical response. Nebulisation as required.","L010, L011, L012"],
+      "Investigations done":["Chest X-ray showing right lower lobe consolidation.","L010"],
+      "Medicines on discharge":["Tab amoxicillin-clavulanate 625mg TDS for 5 days.","L015"],
+      "Condition at discharge":["Afebrile for 24 hours, SpO2 97% on room air, chest clearing.","L014"],
+      "Follow-up advice":["Review in OPD after 1 week with repeat chest X-ray.","L015"]},
+    days:{1:["Patient details","Diagnosis"],2:["Patient details","Diagnosis","Treatment given"],3:["Patient details","Diagnosis","Treatment given","Investigations done"],4:["Patient details","Diagnosis","Treatment given","Investigations done"],5:"all"},
+    flags:[["red","Critical allergy conflict","Penicillin allergy recorded on admission (L010). Amoxicillin-clavulanate, a penicillin derivative, was administered (L012) and is prescribed on discharge (L015). Sign-off is locked until a consultant records a decision."],
+           ["amber","Duplicate charge detected","Nebulisation billed twice on the same day (B019, B020). Routed to billing head as an exception."]]},
+  PT004:{id:"PT004",name:"Test Entry",age:45,sex:"M",ward:"General ward 1, Bed 9",dx:"Unspecified",adm:"11 Aug 2026",day:1,approved:0,
+    insurer:"BharatCare Health Insurance",policy:"POL##ERROR-99",limit:"0",status:"rejected",chip:["Rejected at intake","bad"],
+    notes:[
+      ["L016","11 Aug, 11:05","Unknown","loo 2kg pyaz, 1kg tamatar, doodh 1 litre. shaam ko call karna hai."],
+      ["L017","11 Aug, 11:06","Unknown","testing testing 123 check karo yeh chal raha hai ya nahi"]],
+    bill:[["B023","Unknown adjustment",999999]],
+    summary:null,days:null,
+    flags:[["red","Input rejected","Policy number POL##ERROR-99 is malformed and failed structural validation. Logs L016 and L017 are not clinical notes. No summary was generated and the workflow was halted at intake."]]}
+};
+const CHECKLIST=[["C1","Final diagnosis"],["C2","Procedure performed with date"],["C3","Admission and discharge dates"],["C4","Investigations done"],["C5","Medicines on discharge"],["C6","Condition at discharge"],["C7","Follow-up advice"],["C8","Final bill amount"]];
+const RUNSTEPS=[["Day 1 &middot; notes swept","Summary opened, diagnosis and admission recorded"],["Day 2 &middot; summary extended","Treatment and investigations added as notes arrived"],["Day 3 &middot; bill reconciled","Charges and pharmacy returns matched the same day"],["Medication safety checked","Recorded allergies cross-checked against every prescription"],["Insurer checklist audited","Requirements C1 to C8 verified against the draft"],["Routed to consultant","Draft placed on the attending consultant's screen"]];
+
+let tab="ward", cur=null, day=null, resolved={}, signed={};
+const app=document.getElementById("app"), role=document.getElementById("role");
+const money=n=>"₹"+n.toLocaleString("en-IN");
+const total=p=>p.bill.reduce((a,b)=>a+(Number(b[2])||0),0);
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+
+function railFor(p){
+  const names=["Intake","Summary","Bill","Extensions","Sign-off","Claim","Queries"];
+  let st=["done","run","run","done","block","",""];
+  if(p.status==="rejected")st=["fail","","","","","",""];
+  if(p.status==="blocked")st=["done","done","done","done","block","",""];
+  if(p.status==="pending")st=["done","run","done","done","block","",""];
+  if(signed[p.id])st=["done","done","done","done","done","done","run"];
+  return '<div class="rail">'+names.map((n,i)=>`<div class="${st[i]}"><i>${st[i]==="done"?"&#10003;":i+1}</i>${n}</div>`).join("")+'</div>';
+}
+
+function ward(){
+  const list=Object.values(DATA);
+  const blocked=list.filter(p=>p.status==="blocked"||p.status==="pending").length;
+  app.innerHTML=`
+  <div class="hero">
+    <div class="eyebrow">Continuous discharge</div>
+    <h2>Going home in <em>minutes</em>, not five hours</h2>
+    <p>The summary, the bill and the insurer checklist are built from the day of admission. The doctor's signature is the only thing left on discharge day.</p>
+    <div class="statgrid">
+      <div><b>1 h 52 m</b><span>Average discharge time</span></div>
+      <div><b>3 h</b><span>IRDAI cashless limit</span></div>
+      <div><b>8 of 8</b><span>Checklist items verified</span></div>
+      <div><b>5 of 8</b><span>Insurer queries auto-answered</span></div>
+    </div>
+  </div>
+  <div class="grid3">
+    <div class="card feat"><div class="ico"><svg viewBox="0 0 24 24"><path d="M16 19v-1.4a3.6 3.6 0 0 0-3.6-3.6H7.6A3.6 3.6 0 0 0 4 17.6V19"/><circle cx="10" cy="8" r="3.2"/><path d="M20 19v-1.4a3.6 3.6 0 0 0-2.7-3.5M15.6 5.2a3.2 3.2 0 0 1 0 5.6"/></svg></div><div class="metric">${list.length}<small>Admitted patients</small></div></div>
+    <div class="card feat" style="--soft:var(--amber-bg)"><div class="ico" style="color:var(--amber)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.4V12l3.1 1.9"/></svg></div><div class="metric" style="color:var(--amber)">${blocked}<small>Waiting on a human</small></div></div>
+    <div class="card feat" style="--soft:var(--mint-soft)"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><path d="m8.4 12.3 2.5 2.4 4.7-5"/></svg></div><div class="metric" style="color:var(--mint)">3<small>Discharged today</small></div></div>
+  </div>
+  <div class="card">
+    <div class="eyebrow">Today at a glance</div>
+    <h2>Where the ward <em>stands</em></h2>
+    <p class="lede">Measured against the IRDAI three-hour cashless window and the NABH discharge standard.</p>
+    <table><tbody>
+      <tr><td>Discharges completed today</td><td style="text-align:right">3</td></tr>
+      <tr><td>Files held for consultant decision</td><td style="text-align:right">${blocked}</td></tr>
+      <tr><td>Insurer queries auto-resolved</td><td style="text-align:right">5 of 8</td></tr>
+      <tr><td>Claims dispatched<span class="sim">simulated</span></td><td style="text-align:right">2</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card">
+    <div class="eyebrow">Held files</div>
+    <h2>Needs a <em>human</em></h2>
+    <table><tbody>
+    ${list.filter(p=>p.flags.length).map(p=>`<tr class="row" onclick="open_('${p.id}')"><td><div class="pw"><div class="av">${p.name.split(" ").map(w=>w[0]).join("").slice(0,2)}</div><div><b>${p.name}</b><div class="lede" style="margin:0">${p.flags[0][1]}</div></div></div></td><td style="text-align:right"><span class="chip ${p.chip[1]}">${p.chip[0]}</span></td></tr>`).join("")}
+    </tbody></table>
+  </div>`;
+}
+
+function patients(){
+  app.innerHTML=`<div class="card">
+    <div class="eyebrow">Inpatient ward</div>
+    <h2>Admitted <em>patients</em></h2>
+    <p class="lede">Select a patient to open their file.</p>
+    <table><thead><tr><th>Patient</th><th>Ward</th><th>Diagnosis</th><th>Day</th><th>Status</th></tr></thead><tbody>
+    ${Object.values(DATA).map(p=>`<tr class="row" onclick="open_('${p.id}')">
+      <td><div class="pw"><div class="av">${p.name.split(" ").map(w=>w[0]).join("").slice(0,2)}</div><div><b>${p.name}</b><div style="font-size:12.5px;color:var(--muted)">${p.age}/${p.sex} &middot; ${p.id}</div></div></div></td>
+      <td style="font-size:13.5px">${p.ward}</td><td style="font-size:13.5px">${p.dx}</td>
+      <td>${p.day}${p.approved?" of "+p.approved:""}</td>
+      <td><span class="chip ${p.chip[1]}">${p.chip[0]}</span></td></tr>`).join("")}
+    </tbody></table></div>`;
+}
+
+function open_(id){cur=DATA[id];detail();}
+function detail(){
+  const p=cur;
+  if(p.feed===undefined)p.feed=Math.min(2,p.notes.length);
+  const trig=p.notes.slice(0,p.feed).some(n=>/fit for discharge/i.test(n[3]));
+  app.innerHTML=`<button class="back" onclick="show('pat')">&larr; All patients</button>
+  <div class="card">
+    <h2>${p.name} <span class="chip ${p.chip[1]}" style="vertical-align:middle;margin-left:6px">${p.chip[0]}</span></h2>
+    <p class="lede">${p.age}/${p.sex} &middot; ${p.id} &middot; ${p.ward}</p>
+    ${railFor(p)}
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>Patient</h3><dl class="kv">
+      <dt>Diagnosis</dt><dd>${p.dx}</dd><dt>Admitted</dt><dd>${p.adm}</dd>
+      <dt>Day of stay</dt><dd>${p.day}${p.approved?" of "+p.approved+" approved":""}</dd><dt>Ward</dt><dd>${p.ward}</dd></dl></div>
+    <div class="card"><h3>Insurance</h3><dl class="kv">
+      <dt>Insurer</dt><dd>${p.insurer}</dd><dt>Policy</dt><dd class="mono">${p.policy.slice(0,4)}&bull;&bull;&bull;&bull;${p.policy.slice(-2)}</dd>
+      <dt>Pre-auth limit</dt><dd>₹${p.limit}</dd><dt>Running bill</dt><dd><b>${money(total(p))}</b></dd></dl></div>
+  </div>
+  ${p.flags.map(f=>`<div class="alert ${f[0]}"><b>${f[1]}</b><p>${f[2]}</p></div>`).join("")}
+  <div class="card"><h3>Daily notes &middot; ${p.feed} of ${p.notes.length} received</h3>
+    ${p.notes.slice(0,p.feed).map(n=>`<div class="note"><div class="meta"><span class="id mono">${n[0]}</span> &middot; ${n[1]} &middot; ${n[2]}</div>${esc(n[3])}</div>`).join("")}
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px">
+      <span style="flex:1;font-size:13px;color:var(--muted)">${p.feed>=p.notes.length?"All notes received from the EMR.":"Demo control &mdash; stands in for the EMR posting the next note."}</span>
+      <button class="btn ghost small" ${p.feed>=p.notes.length?"disabled":""} onclick="feed_()">Simulate new EMR note</button>
+    </div>
+  </div>
+  <div class="card"><h3>Billing ledger</h3><table><tbody>
+    ${p.bill.map(b=>`<tr><td class="mono" style="width:70px">${b[0]}</td><td>${b[1]}</td><td style="text-align:right;${b[2]<0?'color:var(--green)':''}">${money(b[2])}</td></tr>`).join("")}
+    <tr><td></td><td><b>Total</b></td><td style="text-align:right"><b>${money(total(p))}</b></td></tr></tbody></table></div>
+  ${p.status==="rejected"?"":`<div class="card"><h3>Running since admission</h3>
+    <div class="check"><span>Discharge summary &middot; updated on every note, last at ${p.notes[p.feed-1][1]}</span><span class="has">Live</span></div>
+    <div class="check"><span>Billing ledger &middot; reconciled on every entry, ${p.bill.length} items posted</span><span class="has">Live</span></div>
+    <div class="check"><span>Insurer checklist &middot; re-audited after each update</span><span class="has">Live</span></div>
+    <p class="lede" style="margin:12px 0 0">No one starts the discharge. It has been building itself since day one.</p></div>`}
+  <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <span style="flex:1;font-size:13.5px;color:var(--muted)">${p.status==="rejected"?"This file cannot proceed. Policy validation failed at intake and the notes are not clinical.":trig?"The doctor has recorded that the patient is fit for discharge. The file is already almost complete.":"Waiting for the doctor's note. Nothing here starts the discharge."}</span>
+    <button class="btn" ${p.status==="rejected"||!trig?"disabled":""} onclick="run()">Mark fit for discharge</button>
+  </div>`;
+}
+
+function run(){
+  const p=cur; let i=0;
+  const paint=()=>{app.innerHTML=`<div class="card"><h2>Discharge triggered &middot; ${p.name}</h2>
+    <p class="lede">Replaying what the agents already did across the stay. Nothing is submitted without a consultant signature.</p>
+    ${RUNSTEPS.map((s,k)=>`<div class="step ${k<i?'done':k===i?'run':''}"><div class="dot"></div><div><div class="lbl">${s[0]}</div><div class="det">${k<i?'Done':k===i?s[1]:'Waiting'}</div></div></div>`).join("")}</div>`;};
+  paint();
+  const tick=setInterval(()=>{i++;paint();if(i>=RUNSTEPS.length){clearInterval(tick);setTimeout(review,500);}},700);
+}
+
+function review(){
+  const p=cur; day=p.day;
+  const conflict=p.flags.some(f=>f[0]==="red");
+  const locked=conflict&&!resolved[p.id];
+  const secs=Object.entries(p.summary);
+  const shown=p.days[day]==="all"?secs.map(s=>s[0]):p.days[day];
+  const missing=k=>p.summary[k][0]==="PENDING";
+  const present=k=>shown.includes(k)&&!missing(k);
+  const cl=[["C1",present("Diagnosis")],["C2",present("Treatment given")],["C3",present("Patient details")],["C4",present("Investigations done")],["C5",present("Medicines on discharge")],["C6",present("Condition at discharge")],["C7",present("Follow-up advice")],["C8",false]];
+  const ok=cl.filter(c=>c[1]).length;
+  app.innerHTML=`<button class="back" onclick="detail()">&larr; ${p.name}</button>
+  <div class="grid2" style="grid-template-columns:1.55fr 1fr">
+    <div>
+      <div class="card sheet">
+        <div class="letter"><div class="org">Sunrise Multispeciality<small>Gurgaon, Haryana</small></div>
+          <div class="doc">Discharge summary<br>${p.id} &middot; ${p.name}</div></div>
+        <p class="lede">Drafted from the daily notes. Every line carries its source log.</p>
+        <div class="scrub">${Object.keys(p.days).map(d=>`<button class="${+d===day?'on':''}" onclick="setDay(${d})">Day ${d}</button>`).join("")}
+          <span style="font-size:12.5px;color:var(--muted);align-self:center;margin-left:6px">the draft as it stood each day</span></div>
+        ${secs.map(([k,v])=>!shown.includes(k)?"":`<div class="sec"><h4>${k}</h4>
+          ${missing(k)?`<div class="pending">[PENDING CONSULTANT INPUT] Not recorded in logs ${v[1]}. <button class="btn ghost small" style="margin-left:6px" onclick="fill('${k}')">Add detail</button></div>`
+          :`<p>${v[0]}</p><span class="src">source: ${v[1]}</span>`}</div>`).join("")}
+        <div class="bar"><span>${locked?"Sign-off locked until the allergy conflict is resolved.":"Consultant signature required. Nothing is submitted automatically."}</span>
+          <button class="btn go" ${locked?"disabled":""} onclick="sign()">Approve and sign</button></div>
+      </div>
+    </div>
+    <div class="sticky">
+      ${p.flags.map(f=>`<div class="alert ${f[0]}"><b>${f[1]}</b><p>${f[2]}</p>
+        ${f[0]==="red"&&!resolved[p.id]?`<button class="btn ghost small" style="margin-top:10px" onclick="resolve_()">Record consultant decision</button>`:""}
+        ${f[0]==="red"&&resolved[p.id]?`<p style="margin-top:8px"><b style="display:inline">Resolved.</b> Antibiotic changed to levofloxacin by consultant.</p>`:""}</div>`).join("")}
+      <div class="card"><h3>Insurer checklist &middot; ${ok} of 8</h3>
+        ${CHECKLIST.map(([id,label],n)=>`<div class="check"><span><span class="mono" style="color:var(--muted)">${id}</span> ${label}</span>
+          <span class="${cl[n][1]?'has':'miss'}">${cl[n][1]?'Present':'Missing'}</span></div>`).join("")}
+        <p class="lede" style="margin:12px 0 0">C8 is never in the clinical notes. In the full system the billing agent merges it: <b>${money(total(p))}</b>.</p></div>
+      <div class="card"><h3>Run log</h3><div class="log">
+        <b>10:04:02</b> AI 2 &middot; EMR log query &middot; ${p.notes.length} rows<br>
+        <b>10:04:05</b> AI 2 &middot; Clinical section mapper &middot; ok<br>
+        <b>10:04:09</b> AI 2 &middot; Allergy conflict scanner &middot; ${conflict?"conflict raised":"clear"}<br>
+        <b>10:04:11</b> AI 1 &middot; Insurer checklist query &middot; ${ok}/8<br>
+        <b>10:04:12</b> AI 5 &middot; Human escalation &middot; ${locked?"held":"consultant"}</div></div>
+    </div></div>`;
+}
+function setDay(d){day=d;const p=cur;const keep=resolved;review();day=d;render_day(d);}
+function render_day(d){day=d;const p=cur;const tmp=p.day;p.day=d;review();p.day=tmp;}
+function fill(k){cur.summary[k]=[k==="Medicines on discharge"?"Tab paracetamol 500mg SOS for 3 days. Oral rehydration and fluids.":"Review in OPD after 3 days with repeat platelet count.","entered by resident"];cur.flags=[];cur.chip=["Ready for sign-off","ok"];review();}
+function feed_(){cur.feed=Math.min(cur.feed+1,cur.notes.length);detail();}
+function his(){
+  app.innerHTML=`<div class="card" style="border-style:dashed"><h3>Not our product</h3>
+    <p class="lede" style="margin:0">This stands in for the hospital's existing admissions system. Discharge Desk reads from it and never writes into it. It is here so you can watch an admission wake the agents up.</p></div>
+  <div class="his">
+    <div class="hdr">SUNRISE HIS v4.2 &mdash; INPATIENT ADMISSIONS<span>ward clerk &middot; terminal 3</span></div>
+    <div class="body">
+      <div class="panel"><b>Currently admitted</b>
+        <table><thead><tr><th>UHID</th><th>Name</th><th>Age/Sex</th><th>Ward</th><th>Provisional diagnosis</th><th>Policy</th></tr></thead><tbody>
+        ${Object.values(DATA).map(p=>`<tr><td>${p.id}</td><td>${p.name}</td><td>${p.age}/${p.sex}</td><td>${p.ward}</td><td>${p.dx}</td><td>${p.policy}</td></tr>`).join("")}
+        </tbody></table></div>
+      <div class="panel"><b>New admission</b>
+        <div class="row3">
+          <div><label>Patient name</label><input id="f-name" value="Kavita Rao"></div>
+          <div><label>Age</label><input id="f-age" value="47"></div>
+          <div><label>Sex</label><select id="f-sex"><option>F</option><option>M</option></select></div>
+        </div>
+        <div class="row3">
+          <div><label>Ward / bed</label><input id="f-ward" value="General ward 4, Bed 7"></div>
+          <div><label>Provisional diagnosis</label><input id="f-dx" value="Acute gastroenteritis"></div>
+          <div><label>Insurer</label><input id="f-ins" value="MediSecure General Insurance"></div>
+        </div>
+        <div class="row3">
+          <div><label>Policy number</label><input id="f-pol" value="MS-2201-77104"></div>
+          <div><label>Pre-auth limit (INR)</label><input id="f-lim" value="60,000"></div>
+          <div><label>Approved stay days</label><input id="f-days" value="3"></div>
+        </div>
+        <button onclick="admit()">Register admission</button>
+        <span style="font-size:11.5px;color:#3A4B59;margin-left:10px">Try a malformed policy number to see intake validation reject it.</span>
+      </div>
+      <div id="hisout"></div>
+    </div>
+  </div>`;
+}
+
+function admit(){
+  const g=id=>document.getElementById(id).value.trim();
+  const name=g("f-name")||"Unnamed", age=g("f-age")||"—", sex=g("f-sex"), ward=g("f-ward"), dx=g("f-dx")||"Unspecified",
+        ins=g("f-ins"), pol=g("f-pol"), lim=g("f-lim"), days=parseInt(g("f-days"))||3;
+  const valid=/^[A-Za-z]{2,3}-\d{2,4}-\d{4,6}$/.test(pol);
+  const n=Object.keys(DATA).length+1, id="PT00"+n, t=new Date().toTimeString().slice(0,8);
+  const dl=dx.toLowerCase();
+  DATA[id]={id,name,age,sex,ward,dx,adm:"16 Aug 2026",day:1,approved:valid?days:0,insurer:ins,policy:pol,limit:lim,
+    status:valid?"ready":"rejected",chip:valid?["Summary building","warn"]:["Rejected at intake","bad"],feed:1,
+    notes:[["N1","16 Aug, "+t,"Doctor",`Admitted with ${dl}. Baseline investigations sent. Started IV fluids and supportive treatment.`],
+      ["N2","17 Aug, 09:10","Doctor",`Symptoms settling. Continuing supportive treatment for ${dl}. Vitals stable.`],
+      ["N3","17 Aug, 20:30","Nurse","Afebrile. Oral intake adequate. Ambulating without support. No fresh complaints."],
+      ["N4","18 Aug, 09:00","Doctor","Clinically improved. Tab pantoprazole 40mg OD for 5 days, ORS as needed. Review in OPD after 5 days. Patient is fit for discharge. Approve clinical discharge."]],
+    bill:[["N-B1","Room charges",13500],["N-B2","Laboratory",2800],["N-B3","Pharmacy",1900],["N-B4","Consultant visits",2000]],
+    summary:{
+      "Patient details":[`${name}, ${age}/${sex}. Admitted 16 Aug 2026. ${ward}.`,"N1"],
+      "Diagnosis":[`${dx}, treated as an inpatient.`,"N1"],
+      "Treatment given":["IV fluids and supportive treatment through the stay.","N1, N2"],
+      "Investigations done":["Baseline investigations sent on admission.","N1"],
+      "Medicines on discharge":["Tab pantoprazole 40mg OD for 5 days. ORS as needed.","N4"],
+      "Condition at discharge":["Afebrile, oral intake adequate, ambulating without support.","N3, N4"],
+      "Follow-up advice":["Review in OPD after 5 days.","N4"]},
+    days:{1:["Patient details","Diagnosis"],2:["Patient details","Diagnosis","Treatment given","Investigations done"],3:"all"},
+    flags:valid?[]:[["red","Input rejected",`Policy number ${pol} is malformed and failed structural validation at intake. The workflow was halted before any summary was drafted.`]]};
+  document.getElementById("hisout").innerHTML=`<div class="out">${t}  ADT-A01 admission message emitted &middot; UHID ${id}
+${t}  Discharge Desk received admission event
+${t}  AI 1 policy eligibility validator ... ${valid?"PASS":'<span class="err">FAIL &mdash; malformed policy number, workflow halted</span>'}
+${valid?`${t}  AI 2 discharge summary frame opened, now monitoring EMR
+${t}  AI 3 billing ledger watch started
+${t}  state: CONTINUOUS &mdash; no further trigger needed until discharge`:`${t}  <span class="err">state: HALTED at step 1</span>`}</div>
+    <div style="margin-top:10px"><button onclick="show('pat');open_('${id}')">Open ${name} in Discharge Desk</button></div>`;
+}
+
+function resolve_(){resolved[cur.id]=true;review();}
+function sign(){signed[cur.id]=true;done();}
+
+function done(){
+  const p=cur;
+  app.innerHTML=`<div class="card">
+    <h2>Signed and dispatched</h2>
+    <p class="lede">${p.name} &middot; ${p.id}</p>
+    ${railFor(p)}
+    <dl class="kv" style="margin-top:16px">
+      <dt>Summary</dt><dd>Signed by attending consultant &middot; 12 Aug 2026, 10:06</dd>
+      <dt>Checklist</dt><dd>8 of 8 complete (C8 merged from billing)</dd>
+      <dt>Final bill</dt><dd><b>${money(total(p))}</b></dd>
+      <dt>Claim</dt><dd>Packaged as FHIR R4 and dispatched over NHCX<span class="sim">simulated</span></dd>
+      <dt>Stopwatch</dt><dd>Three-hour insurer window started at 10:06</dd>
+    </dl>
+    <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn">Download packet</button>
+      <button class="btn ghost" onclick="show('q')">Open insurer queries</button>
+      <button class="btn ghost" onclick="show('pat')">Back to patients</button></div>
+  </div>`;
+}
+
+function queries(){
+  app.innerHTML=`<div class="card"><div class="eyebrow">NHCX gateway</div><h2>Insurer <em>queries</em></h2>
+    <p class="lede">Factual questions are answered from the record. Clinical ones wait for a doctor.</p>
+    <div class="check"><span><span class="mono">Q001</span> Confirm admission and discharge dates</span><span class="has">Auto-answered</span></div>
+    <div class="check"><span><span class="mono">Q002</span> Confirm ward category billed</span><span class="has">Auto-answered</span></div>
+    <div class="check"><span><span class="mono">Q004</span> Number of CBC tests billed</span><span class="has">Auto-answered</span></div>
+    <div class="check"><span><span class="mono">Q008</span> Stay days approved versus billed</span><span class="has">Auto-answered</span></div>
+  </div>
+  <div class="card"><h3>Waiting on you</h3>
+    <div class="alert amber"><b>Q003 &middot; Ramesh Kumar</b><p>Justify need for inpatient admission for appendicitis.</p>
+      <p style="margin-top:8px"><b style="display:inline">Draft reply:</b> Patient presented with acute right lower abdominal pain for 12 hours with fever; ultrasound confirmed acute appendicitis requiring surgical intervention. <span class="src">source: L001</span></p>
+      <button class="btn go small" style="margin-top:10px">Approve reply</button></div>
+    <div class="alert red"><b>Q007 &middot; Arjun Mehta &middot; held</b><p>Patient file records penicillin allergy. Clarify safety of amoxicillin-clavulanate.</p>
+      <p style="margin-top:8px">Claim is held. This query cannot be answered here &mdash; it is routed to the medical director for therapeutic reconciliation.</p></div>
+  </div>`;
+}
+
+function show(t){tab=t;["ward","pat","q","his"].forEach(k=>document.getElementById("t-"+k).className=k===t?"on":"");
+  if(t==="ward")ward();else if(t==="pat")patients();else if(t==="his")his();else queries();}
+document.getElementById("t-ward").onclick=()=>show("ward");
+document.getElementById("t-pat").onclick=()=>show("pat");
+document.getElementById("t-q").onclick=()=>show("q");
+document.getElementById("t-his").onclick=()=>show("his");
+show("ward");
+</script>
+</body>
+</html>
