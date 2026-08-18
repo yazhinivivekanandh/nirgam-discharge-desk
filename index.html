@@ -308,6 +308,25 @@ h2 em{font-style:normal;color:var(--primary)}
   API KEYS: none here, and none ever. Keys live in the backend proxy only.
 -->
 <script>
+const BACKEND_URL = "https://claims-backend-26qu.onrender.com";
+async function triggerYoxa(patientId) {
+  const btn = document.getElementById("trigger-btn");
+  if (btn) { btn.disabled = true; btn.textContent = "Starting workflow..."; }
+  try {
+    const resp = await fetch(BACKEND_URL + "/api/trigger", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ patient_id: patientId })
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || "Trigger failed");
+    if (btn) btn.textContent = "Workflow started! Check Yoxa dashboard.";
+    alert("Workflow triggered for " + patientId + "! Check your Yoxa dashboard to see it run.");
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.textContent = "Run AI Workflow"; }
+    alert("Error: " + e.message);
+  }
+}
 const DATA = {
   PT001:{id:"PT001",name:"Ramesh Kumar",age:54,sex:"M",ward:"General ward 3, Bed 12",dx:"Acute appendicitis",adm:"09 Aug 2026",day:4,approved:4,
     insurer:"MediSecure General Insurance",policy:"MS-2201-88421",limit:"1,20,000",status:"ready",chip:["Ready for sign-off","ok"],
@@ -487,6 +506,7 @@ function detail(){
   <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
     <span style="flex:1;font-size:13.5px;color:var(--muted)">${p.status==="rejected"?"This file cannot proceed. Policy validation failed at intake and the notes are not clinical.":trig?"The doctor has recorded that the patient is fit for discharge. The file is already almost complete.":"Waiting for the doctor's note. Nothing here starts the discharge."}</span>
     <button class="btn" ${p.status==="rejected"||!trig?"disabled":""} onclick="run()">Mark fit for discharge</button>
+    <button class="btn go" id="trigger-btn" onclick="triggerYoxa('${p.id}')">Run AI Workflow</button>
   </div>`;
 }
 
